@@ -458,7 +458,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "dracoon-template"
+name = "dracoon-rust-scripting-template"
 version = "0.1.0"
 dependencies = [
  "clap",

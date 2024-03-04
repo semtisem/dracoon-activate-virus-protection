@@ -6,7 +6,6 @@ pub struct Client {
     dracoon: Dracoon,
 }
 
-
 impl Client {
     #[allow(unused)]
     pub fn connect_password_flow() {
