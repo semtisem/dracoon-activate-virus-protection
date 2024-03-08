@@ -1,5 +1,5 @@
 use dco3::{Dracoon, OAuth2Flow, User};
-use crate::config::{ScriptConfigAuthCodeFlow, ScriptConfigPasswordFlow};
+use crate::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
 
 #[derive(Clone)]
 pub struct Client {
@@ -9,19 +9,19 @@ pub struct Client {
 impl Client {
     #[allow(unused)]
     pub fn connect_password_flow() {
-        let config = ScriptConfigPasswordFlow::load_default_config();
-        print!("{:?}", config.credentials().client_id);
+        let auth_config = AuthConfig::<CredentialsPasswordFlow>::load_default_config();
+        print!("{:?}", auth_config.username);
     }
 
     #[allow(unused)]
     pub async fn connect_auth_code_flow() {
-        let config = ScriptConfigAuthCodeFlow::load_default_config();
-        let credentials = config.credentials();
+        let auth_config = AuthConfig::<CredentialsAuthCodeFlow>::load_default_config();
+
         let dracoon = Dracoon::builder()
-            .with_base_url(&credentials.base_url)
-            .with_client_id(&credentials.client_id)
-            .with_client_secret(&credentials.client_secret)
-            .with_redirect_uri(&credentials.redirect_uri)
+            .with_base_url(auth_config.base_url)
+            .with_client_id(auth_config.client_id)
+            .with_client_secret(auth_config.client_secret)
+            .with_redirect_uri(auth_config.redirect_uri)
             .build()
             .unwrap();
 
