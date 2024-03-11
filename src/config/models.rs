@@ -1,4 +1,4 @@
-use tracing::{error, level_filters::LevelFilter, metadata::Level};
+use tracing::{debug, error, level_filters::LevelFilter, metadata::Level};
 
 use std::{sync::OnceLock};
 use config::{Config, File, FileFormat};
@@ -74,20 +74,37 @@ impl ScriptConfig {
         static CONFIG:  OnceLock<ScriptConfig> = OnceLock::new();
         let relative_path = path.unwrap_or("config.yml".to_string());
 
-        let mut path = process_path::get_executable_path().unwrap();
+        let path = process_path::get_executable_path();
 
-        path  = path.parent().unwrap().to_path_buf();
+        let mut path = match path {
+            Some(p) => p,
+            None => {
+                error!("Failed to get executable path as a result using default config. Log level is to error. No log file is created.");
+                return &CONFIG.get_or_init(|| ScriptConfig {
+                    logging: LoggingConfig {
+                        log_level: DebugLevel::Error,
+                        log_file: None,
+                    }
+                });
+            }
+        };
+        
+        path = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
         
-        let auth_config = CONFIG.get_or_init(|| {
+        let config = CONFIG.get_or_init(|| {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build config")
+            .map_err(|e| {
+                println!("Failed to build config: {}", e);
+            }).unwrap()
             .try_deserialize::<ScriptConfig>()
-            .expect("Failed to deserialize config")
+            .map_err(|e| {
+                println!("Failed to deserialize config: {}", e);
+            }).unwrap()
         });
-        auth_config
+        config
     }
 
     pub fn get_logging_config(&self) -> &LoggingConfig {

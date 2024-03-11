@@ -23,6 +23,7 @@ impl Logging {
             .with_source_location(true)
             .compact();
 
+
         if logging_config.create_log_file() {
             let log_file = OpenOptions::new()
                 .write(true)

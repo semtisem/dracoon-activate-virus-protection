@@ -1,6 +1,7 @@
 use std::{marker::PhantomData, sync::OnceLock};
 use config::{Config, File, FileFormat};
-use serde::Deserialize;
+use serde::{de, Deserialize};
+use tracing::{debug, error};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct CredentialsAuthCodeFlow {
@@ -18,6 +19,8 @@ impl Credentials for CredentialsAuthCodeFlow {
 
         let mut path = process_path::get_executable_path().unwrap();
 
+        debug!("executable path: {:?}", path);
+
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
         
@@ -25,9 +28,13 @@ impl Credentials for CredentialsAuthCodeFlow {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build credential config")
+            .map_err(|e| {
+                error!("Failed to build credential config: {}", e);
+            }).unwrap()
             .try_deserialize::<CredentialsAuthCodeFlow>()
-            .expect("Failed to deserialize credential config")
+            .map_err(|e| {
+                error!("Failed to deserialize credential config: {}", e);
+            }).unwrap()
         });
         auth_config
     }
@@ -51,6 +58,7 @@ impl Credentials for CredentialsPasswordFlow {
         // todo handle unwrap
         let mut path = process_path::get_executable_path().unwrap();
 
+        debug!("executable path: {:?}", path);
         // todo handle unwrap
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
@@ -59,9 +67,13 @@ impl Credentials for CredentialsPasswordFlow {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build credential config")
+            .map_err(|e| {
+                error!("Failed to build credential config: {}", e);
+            }).unwrap()
             .try_deserialize::<CredentialsPasswordFlow>()
-            .expect("Failed to deserialize credential config")
+            .map_err(|e| {
+                error!("Failed to deserialize credential config: {}", e);
+            }).unwrap()
         });
 
         auth_config
