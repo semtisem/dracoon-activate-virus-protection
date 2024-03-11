@@ -1,10 +1,13 @@
 use client::Client;
-
+use dco3::User;
 
 mod client;
-mod config;
+
 
 #[tokio::main]
 async fn main() {
-    Client::connect_auth_code_flow().await;
+    let dracoon = Client::connect_auth_code_flow().await;
+
+    let current_user = dracoon.get_user_account().await.unwrap();
+    print!("{:?}", current_user);
 }

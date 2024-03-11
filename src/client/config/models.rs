@@ -11,26 +11,24 @@ pub struct CredentialsAuthCodeFlow {
 }
 
 impl Credentials for CredentialsAuthCodeFlow {
-    fn init(path: Option<String>) -> CredentialsAuthCodeFlow {
+    fn init(path: Option<String>) -> &'static CredentialsAuthCodeFlow {
         static CONFIG:  OnceLock<CredentialsAuthCodeFlow> = OnceLock::new();
-        let relative_path = path.unwrap_or("config.yml".to_string());
+        let relative_path = path.unwrap_or("credential_config.yml".to_string());
 
         let mut path = process_path::get_executable_path().unwrap();
 
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
-
-        print!("{:?}", path.to_str().unwrap().to_string());
         
-        let auth_conig = CONFIG.get_or_init(|| {
+        let auth_config = CONFIG.get_or_init(|| {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build config")
+            .expect("Failed to build credential config")
             .try_deserialize::<CredentialsAuthCodeFlow>()
-            .expect("Failed to deserialize config")
+            .expect("Failed to deserialize credential config")
         });
-        auth_conig.clone()
+        auth_config
     }
 }
 
@@ -44,26 +42,35 @@ pub struct CredentialsPasswordFlow {
 }
 
 impl Credentials for CredentialsPasswordFlow {
-    fn init(path: Option<String>) -> CredentialsPasswordFlow{
+    fn init(path: Option<String>) -> &'static CredentialsPasswordFlow{
         static CONFIG:  OnceLock<CredentialsPasswordFlow> = OnceLock::new();
-        let relative_path = path.unwrap_or("config.yml".to_string());
 
+        let relative_path;
+        match path {
+            Some(path) => {
+               relative_path = path;
+            }
+            None => {
+                relative_path = "credential_config.yml".to_string();
+            }
+        }
+        // todo handle unwrap
         let mut path = process_path::get_executable_path().unwrap();
 
+        // todo handle unwrap
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
 
-        print!("{:?}", path.to_str().unwrap().to_string());
         let auth_config = CONFIG.get_or_init(|| {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build config")
+            .expect("Failed to build credential config")
             .try_deserialize::<CredentialsPasswordFlow>()
-            .expect("Failed to deserialize config")
+            .expect("Failed to deserialize credential config")
         });
 
-        auth_config.clone()
+        auth_config
     }
 }
 
@@ -74,7 +81,7 @@ pub struct AuthConfig<T: Credentials> {
 }
 
 pub trait Credentials {
-    fn init(path: Option<String>) -> Self;
+    fn init(path: Option<String>) -> &'static Self;
 }
 
 impl<T> AuthConfig<T>
@@ -83,14 +90,14 @@ where
     {
  
     #[allow(dead_code)]
-    pub fn load_config_from_path(path: String) -> T {
+    pub fn load_config_from_path(path: String) -> &'static T {
         let config = Credentials::init(path.into());
         config
         // TODO validate base_url
     }
 
     #[allow(dead_code)]
-    pub fn load_default_config() -> T {
+    pub fn load_default_config() -> &'static T {
         let config = Credentials::init(None);
         config
         // TODO validate base_url
@@ -103,7 +110,8 @@ mod tests {
 
     #[test]
     fn test_load_config_password_flow() {
-        let config = AuthConfig::<CredentialsPasswordFlow>::load_config_from_path("config.passoword.flow.example.yml".to_string());
+        // todo copy file to deps folder and test?
+        let config = AuthConfig::<CredentialsPasswordFlow>::load_config_from_path("../../../credential_config.example.password.flow.yml".to_string());
         assert_eq!(config.client_id, "xxx");
         assert_eq!(config.client_secret,"xxx");
         assert_eq!(config.base_url,"https://dracoon.team");
@@ -113,7 +121,8 @@ mod tests {
 
     #[test]
     fn test_load_config_auth_flow() {
-        let config = AuthConfig::<CredentialsAuthCodeFlow>::load_config_from_path("config.auth.flow.example.yml".to_string());
+        // todo copy file to deps folder and test?
+        let config = AuthConfig::<CredentialsAuthCodeFlow>::load_config_from_path("../../../credential_config.example.auth.flow.yml".to_string());
         assert_eq!(config.client_id, "xxx");
         assert_eq!(config.client_secret, "xxx");
         assert_eq!(config.base_url, "https://dracoon.team");

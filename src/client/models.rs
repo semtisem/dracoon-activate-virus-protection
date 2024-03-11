@@ -1,31 +1,38 @@
-use dco3::{Dracoon, OAuth2Flow, User};
-use crate::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
+use dco3::{auth::Connected, Dracoon, OAuth2Flow, User};
+
+use crate::client::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
 
 #[derive(Clone)]
-pub struct Client {
-    dracoon: Dracoon,
-}
+pub struct Client {}
 
 impl Client {
     #[allow(unused)]
-    pub fn connect_password_flow() {
+    pub async fn connect_password_flow() -> Dracoon<Connected> {
         let auth_config = AuthConfig::<CredentialsPasswordFlow>::load_default_config();
-        print!("{:?}", auth_config.username);
-    }
-
-    #[allow(unused)]
-    pub async fn connect_auth_code_flow() {
-        let auth_config = AuthConfig::<CredentialsAuthCodeFlow>::load_default_config();
-
+        
         let dracoon = Dracoon::builder()
-            .with_base_url(auth_config.base_url)
-            .with_client_id(auth_config.client_id)
-            .with_client_secret(auth_config.client_secret)
-            .with_redirect_uri(auth_config.redirect_uri)
+            .with_base_url(auth_config.base_url.clone())
+            .with_client_id(auth_config.client_id.clone())
+            .with_client_secret(auth_config.client_secret.clone())
             .build()
             .unwrap();
 
-       
+        dracoon.connect(OAuth2Flow::PasswordFlow(auth_config.username.clone(), auth_config.password.clone()))
+            .await.unwrap()
+    }
+
+    #[allow(unused)]
+    pub async fn connect_auth_code_flow() -> Dracoon<Connected> {
+        let auth_config = AuthConfig::<CredentialsAuthCodeFlow>::load_default_config();
+
+        let dracoon = Dracoon::builder()
+            .with_base_url(auth_config.base_url.clone())
+            .with_client_id(auth_config.client_id.clone())
+            .with_client_secret(auth_config.client_secret.clone())
+            .with_redirect_uri(auth_config.redirect_uri.clone())
+            .build()
+            .unwrap();        
+
         println!("Please log in via browser (open url): ");
         println!("{}", dracoon.get_authorize_url());
 
@@ -34,12 +41,8 @@ impl Client {
             .interact()
             .unwrap();
 
-        let dracoon = dracoon
-            .connect(OAuth2Flow::AuthCodeFlow(auth_code.trim_end().into()))
+        dracoon.connect(OAuth2Flow::AuthCodeFlow(auth_code.trim_end().into()))
             .await
-            .unwrap();
-
-        let user_info = dracoon.get_user_account().await.unwrap();
-        println!("User info: {:?}", user_info);
+            .unwrap()
     }
 }
