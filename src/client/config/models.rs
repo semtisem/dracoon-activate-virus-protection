@@ -13,6 +13,7 @@ pub struct CredentialsAuthCodeFlow {
 impl Credentials for CredentialsAuthCodeFlow {
     fn init(path: Option<String>) -> &'static CredentialsAuthCodeFlow {
         static CONFIG:  OnceLock<CredentialsAuthCodeFlow> = OnceLock::new();
+
         let relative_path = path.unwrap_or("credential_config.yml".to_string());
 
         let mut path = process_path::get_executable_path().unwrap();
@@ -45,15 +46,8 @@ impl Credentials for CredentialsPasswordFlow {
     fn init(path: Option<String>) -> &'static CredentialsPasswordFlow{
         static CONFIG:  OnceLock<CredentialsPasswordFlow> = OnceLock::new();
 
-        let relative_path;
-        match path {
-            Some(path) => {
-               relative_path = path;
-            }
-            None => {
-                relative_path = "credential_config.yml".to_string();
-            }
-        }
+        let relative_path = path.unwrap_or("credential_config.yml".to_string());
+        
         // todo handle unwrap
         let mut path = process_path::get_executable_path().unwrap();
 

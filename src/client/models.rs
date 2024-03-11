@@ -1,4 +1,4 @@
-use dco3::{auth::Connected, Dracoon, OAuth2Flow, User};
+use dco3::{auth::Connected, Dracoon, OAuth2Flow};
 
 use crate::client::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
 
