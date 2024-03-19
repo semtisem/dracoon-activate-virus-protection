@@ -1,7 +1,6 @@
 use dco3::{auth::Connected, Dracoon, OAuth2Flow};
 
 use crate::client::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
-use anyhow::Result;
 
 #[derive(Clone)]
 pub struct Client {}

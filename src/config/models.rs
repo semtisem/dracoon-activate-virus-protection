@@ -1,12 +1,11 @@
-use tracing::{debug, error, level_filters::LevelFilter, metadata::Level};
+use tracing::{error, level_filters::LevelFilter};
 
-use std::{sync::OnceLock};
+use std::sync::OnceLock;
 use config::{Config, File, FileFormat};
 use serde::Deserialize;
-use anyhow::Result;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct ScriptConfig {
+pub struct ScriptConfig { 
     logging: LoggingConfig,
 }
 
@@ -94,7 +93,7 @@ impl ScriptConfig {
         
         let config = CONFIG.get_or_init(|| {
             Config::builder()
-            .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
+            .add_source(File::new(&path.to_str().unwrap(), FileFormat::Yaml).required(true))
             .build()
             .map_err(|e| {
                 println!("Failed to build config: {}", e);
@@ -110,12 +109,4 @@ impl ScriptConfig {
     pub fn get_logging_config(&self) -> &LoggingConfig {
         &self.logging
     }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-
 }

@@ -1,4 +1,4 @@
-use std::{fs::OpenOptions, io::{self, stdout}};
+use std::{fs::OpenOptions, io::{self}};
 
 use tracing::error;
 use tracing_subscriber::filter::EnvFilter;
