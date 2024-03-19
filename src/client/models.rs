@@ -1,4 +1,4 @@
-use dco3::{auth::Connected, Dracoon, OAuth2Flow, User};
+use dco3::{auth::Connected, Dracoon, OAuth2Flow};
 
 use crate::client::config::{AuthConfig, CredentialsAuthCodeFlow, CredentialsPasswordFlow};
 
@@ -42,7 +42,6 @@ impl Client {
             .unwrap();
 
         dracoon.connect(OAuth2Flow::AuthCodeFlow(auth_code.trim_end().into()))
-            .await
-            .unwrap()
+            .await.unwrap()
     }
 }

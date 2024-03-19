@@ -1,6 +1,7 @@
 use std::{marker::PhantomData, sync::OnceLock};
 use config::{Config, File, FileFormat};
-use serde::Deserialize;
+use serde::{de, Deserialize};
+use tracing::{debug, error};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct CredentialsAuthCodeFlow {
@@ -13,9 +14,12 @@ pub struct CredentialsAuthCodeFlow {
 impl Credentials for CredentialsAuthCodeFlow {
     fn init(path: Option<String>) -> &'static CredentialsAuthCodeFlow {
         static CONFIG:  OnceLock<CredentialsAuthCodeFlow> = OnceLock::new();
+
         let relative_path = path.unwrap_or("credential_config.yml".to_string());
 
         let mut path = process_path::get_executable_path().unwrap();
+
+        debug!("executable path: {:?}", path);
 
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
@@ -24,9 +28,13 @@ impl Credentials for CredentialsAuthCodeFlow {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build credential config")
+            .map_err(|e| {
+                error!("Failed to build credential config: {}", e);
+            }).unwrap()
             .try_deserialize::<CredentialsAuthCodeFlow>()
-            .expect("Failed to deserialize credential config")
+            .map_err(|e| {
+                error!("Failed to deserialize credential config: {}", e);
+            }).unwrap()
         });
         auth_config
     }
@@ -45,18 +53,12 @@ impl Credentials for CredentialsPasswordFlow {
     fn init(path: Option<String>) -> &'static CredentialsPasswordFlow{
         static CONFIG:  OnceLock<CredentialsPasswordFlow> = OnceLock::new();
 
-        let relative_path;
-        match path {
-            Some(path) => {
-               relative_path = path;
-            }
-            None => {
-                relative_path = "credential_config.yml".to_string();
-            }
-        }
+        let relative_path = path.unwrap_or("credential_config.yml".to_string());
+        
         // todo handle unwrap
         let mut path = process_path::get_executable_path().unwrap();
 
+        debug!("executable path: {:?}", path);
         // todo handle unwrap
         path  = path.parent().unwrap().to_path_buf();
         path.push(relative_path);
@@ -65,9 +67,13 @@ impl Credentials for CredentialsPasswordFlow {
             Config::builder()
             .add_source(File::new(&path.to_str().unwrap().to_string(), FileFormat::Yaml).required(true))
             .build()
-            .expect("Failed to build credential config")
+            .map_err(|e| {
+                error!("Failed to build credential config: {}", e);
+            }).unwrap()
             .try_deserialize::<CredentialsPasswordFlow>()
-            .expect("Failed to deserialize credential config")
+            .map_err(|e| {
+                error!("Failed to deserialize credential config: {}", e);
+            }).unwrap()
         });
 
         auth_config
