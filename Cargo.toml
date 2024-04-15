@@ -1,5 +1,5 @@
 [package]
-name = "dracoon-rust-scripting-template"
+name = "dracoon-activate-virus-protection"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,14 +7,15 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.80"
+async-recursion = "1.1.0"
 clap = { version = "4.5.1", features = ["derive"] }
 config = "0.14.0"
-dco3 = "0.6.1"
 dialoguer = "0.11.0"
 lazy_static = "1.4.0"
 process_path = "0.1.4"
 serde = { version = "1.0.197", features = ["derive"] }
 tokio = { version = "1.36.0", features = ["full"] }
+dco3 = "0.10.2"
 
 # logging and tracing
 tracing = "0.1.40"
