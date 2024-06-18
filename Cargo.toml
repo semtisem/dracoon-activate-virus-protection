@@ -23,7 +23,3 @@ tracing-subscriber = {version = "0.3.18", features = ["env-filter", "registry"]}
 console = "0.15.8"
 indicatif = "0.17.8"
 openssl = {version="0.10.64", features = ["vendored"]}
-
-[profile.release]
-opt-level = "z"
-strip = "debuginfo"
