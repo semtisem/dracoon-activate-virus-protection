@@ -1,4 +1,4 @@
-# Dracoon Activate Virus Protection
+# DRACOON Activate Virus Protection for sub rooms
 
 ## Description
 
@@ -6,15 +6,18 @@ This project aims on activating virus protection for given rooms and all their s
 
 ## Usage
 
-1. Register OAuth Client in DRACOON ([manuel] (https://cloud.support.dracoon.com/hc/en-us/articles/360018137839-Settings-Apps-incl-OAuth-app-registration))
-   1.1 Use Client ID: Q8dTruVvswW5Iyi0QWqiZFKP8gFgFjnZ, Client Secret: nhh27DqlmFEjf5ijVAN0ZoBdhKMDu4lv, GrandTypes: authorization_code, Callback: $YOUR_DRACOON_DOMAIN/oauth/callback
+1. Register OAuth Client in DRACOON ([instructions](https://cloud.support.dracoon.com/hc/en-us/articles/360018137839-Settings-Apps-incl-OAuth-app-registration))
+   <strong>Client ID:</strong> Q8dTruVvswW5Iyi0QWqiZFKP8gFgFjnZ
+   <strong>Client Secret:</strong> nhh27DqlmFEjf5ijVAN0ZoBdhKMDu4lv
+   <strong>GrandTypes:</strong> authorization_code
+   <strong>Callback URL:</strong> <em>$YOUR_DRACOON_DOMAIN</em>/oauth/callback
 
 2. Download GitHub release or build from source
 3. Fill config.example.yml
-
-3.1 Enter your DRACOON domain under "base_url"
-3.2 Enter room ids in the array of "activate_virus_protection"
-3.3 Rename file to config.yml. This file need to be next to the scripts binary.
+   3.1 Enter your DRACOON domain at <strong>base_url</strong>
+   3.2 Enter room ids in the array of <strong>activate_virus_protection</strong>
+   3.3 Rename file to <strong>config.yml</strong>. This file need to be next to the scripts binary.
+4. Run binary
 
 ## License
 
