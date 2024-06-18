@@ -27,6 +27,7 @@ jobs:
           RUSTTARGET: ${{ matrix.target }}
           EXTRA_FILES: "README.md config.example.yml"
           ARCHIVE_TYPES: ${{ matrix.archive }}
+          STATIC_LINKING: false
           # PRE_BUILD: "pre_build.sh"
           # POST_BUILD: "test/post_build.sh"
           MINIFY: "yes"
