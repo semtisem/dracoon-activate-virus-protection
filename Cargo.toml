@@ -20,3 +20,9 @@ dco3 = "0.10.2"
 # logging and tracing
 tracing = "0.1.40"
 tracing-subscriber = {version = "0.3.18", features = ["env-filter", "registry"]}
+console = "0.15.8"
+indicatif = "0.17.8"
+
+[profile.release]
+opt-level = "z"
+strip = "debuginfo"
