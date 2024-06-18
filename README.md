@@ -1,4 +1,4 @@
-# Project Name: Dracoon Activate Virus Protection
+# Dracoon Activate Virus Protection
 
 ## Description:
 
