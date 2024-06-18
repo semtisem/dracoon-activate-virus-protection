@@ -1,4 +1,4 @@
-# DRACOON Activate Virus Protection for sub rooms
+# DRACOON Activate Virus Protection
 
 ## Description
 
