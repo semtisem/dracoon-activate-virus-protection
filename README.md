@@ -4,6 +4,10 @@
 
 This project aims on activating virus protection for given rooms and all their sub rooms in DRACOON.
 
+## Prerequisites
+
+Authenticated user can only activate virus protection on rooms where he/she is data room admin.
+
 ## Usage
 
 1. Register OAuth Client in DRACOON ([instructions](https://cloud.support.dracoon.com/hc/en-us/articles/360018137839-Settings-Apps-incl-OAuth-app-registration))
