@@ -497,6 +497,7 @@ dependencies = [
  "dialoguer",
  "indicatif",
  "lazy_static",
+ "openssl",
  "process_path",
  "serde",
  "tokio",
