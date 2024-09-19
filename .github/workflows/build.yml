@@ -5,8 +5,7 @@ on:
 jobs:
   release:
     name: release ${{ matrix.target }}
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
@@ -17,26 +16,27 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
     steps:
+      - uses: actions/checkout@v4 # Ensure the correct version is used
+
       - name: Set Perl environment variables
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          echo "PERL=$((where.exe perl)[0])" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          echo "OPENSSL_SRC_PERL=$((where.exe perl)[0])" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      - uses: actions/checkout@v4
+          $perlPath = (Get-Command perl.exe).Path
+          echo "PERL=$perlPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          echo "OPENSSL_SRC_PERL=$perlPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: Install cross-compilation tools
+        if: startsWith(matrix.os, 'ubuntu')
         uses: taiki-e/setup-cross-toolchain-action@v1
         with:
           target: ${{ matrix.target }}
 
-        if: startsWith(matrix.os, 'ubuntu')
-      - uses: taiki-e/upload-rust-binary-action@v1
+      - name: Build and Upload Binary
+        uses: taiki-e/upload-rust-binary-action@v1
         with:
-          # (required) Comma-separated list of binary names (non-extension portion of filename) to build and upload.
-          # Note that glob pattern is not supported yet.
           bin: dracoon-activate-virus-protection
-          # (optional) Target triple, default is host triple.
           target: ${{ matrix.target }}
-          # (required) GitHub token for uploading assets to GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
           tar: unix
           zip: windows
