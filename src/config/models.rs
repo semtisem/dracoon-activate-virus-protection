@@ -8,7 +8,7 @@ use std::sync::OnceLock;
 pub struct ScriptConfig {
     dracoon: DracoonConfig,
     logging: LoggingConfig,
-    activate_virus_protection: Vec<u64>,
+    activate_virus_protection: VirusProtectionConfig,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -46,11 +46,43 @@ impl LoggingConfig {
 #[derive(Deserialize, Debug, Clone)]
 pub struct DracoonConfig {
     base_url: String,
+    client_id: String,
+    client_secret: String,
 }
 
 impl DracoonConfig {
     pub fn get_base_url(&self) -> &String {
         &self.base_url
+    }
+
+    pub fn get_client_id(&self) -> &String {
+        &self.client_id
+    }
+
+    pub fn get_client_secret(&self) -> &String {
+        &self.client_secret
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct VirusProtectionConfig {
+    activate_on_all_rooms: bool,
+    room_ids: Vec<u64>,
+}
+
+impl VirusProtectionConfig {
+    pub fn activate_on_all_rooms(&self) -> bool {
+        self.activate_on_all_rooms
+    }
+
+    pub fn get_room_ids(&self) -> Vec<Option<u64>> {
+        if self.activate_on_all_rooms {
+            return vec![None];
+        } else {
+            let room_ids = self.room_ids.iter().map(|id| Some(*id)).collect();
+
+            return room_ids;
+        }
     }
 }
 
@@ -105,8 +137,8 @@ impl ScriptConfig {
         &self.logging
     }
 
-    pub fn get_virus_protection_rooms(&self) -> &Vec<u64> {
-        &self.activate_virus_protection
+    pub fn get_virus_protection_rooms(&self) -> Vec<Option<u64>> {
+        self.activate_virus_protection.get_room_ids()
     }
 
     pub fn get_dracoon_config(&self) -> &DracoonConfig {

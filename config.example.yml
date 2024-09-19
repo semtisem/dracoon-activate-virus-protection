@@ -1,7 +1,11 @@
 dracoon:
   base_url: https://dracoon.team
+  client_id: YOUR_CLIENT_ID
+  client_secret: YOUR_CLIENT_SECRET
 logging:
   log_level: info
   log_file:
     log_file_path: dracoon.log
-activate_virus_protection: [] # data room ids to activate virus scan in including all sub rooms
+activate_virus_protection:
+  activate_on_all_rooms: false # activate virus scan in all rooms - !!! be careful with this setting !!! files are blocked until scanned
+  room_ids: [] # data room ids to activate virus scan in including all sub rooms. Will be ignored when activate_on_all_rooms is set to true
